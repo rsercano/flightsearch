@@ -9,11 +9,19 @@ This project internally uses [maven wrapper](https://github.com/takari/maven-wra
 
 ``./mvnw clean package``
 
+to execute;
+
 ``java -jar target/flightsearch-1.0.0-SNAPSHOT.jar``
 
 or with options if you don't want to use default ones;
 
 ``java -jar target/flightsearch-1.0.0-SNAPSHOT.jar -Dspring.config.location=/tmp/application.properties``
+
+then you'll be able to access service documentation on;
+
+`http://localhost:<server.port>/<server.servlet.context-path>/swagger-ui.html` 
+
+in default configuration [just click here](http://localhost:8080/flightsearch/swagger-ui.html)
 
 ## Dependencies
 
