@@ -4,7 +4,7 @@ This is a demonstration of assessment by TokiGames, uses below URLS to fetch fli
 - https://obscure-caverns-79008.herokuapp.com/cheap
 - https://obscure-caverns-79008.herokuapp.com/business
 
-## Build & Execution
+### Build & Execution
 This project internally uses [maven wrapper](https://github.com/takari/maven-wrapper), therefore you can build & run it with;
 
 ``./mvnw clean package``
@@ -23,12 +23,12 @@ then you'll be able to access service documentation on;
 
 in default configuration [just click here](http://localhost:8080/flightsearch/swagger-ui.html)
 
-## Dependencies
+### Dependencies
 
 - It requires `MongoDB 3.6+` to be up & running.
 - It requires `JDK11` for execution
 
-## Default Configuration
+### Default Configuration
 
 If you don't provide an application.properties file the following configuration will be used;
 
@@ -37,9 +37,11 @@ spring.data.mongodb.uri=mongodb://localhost:27017/flightsearch
 server.port=8080
 server.servlet.context-path=/flightsearch
 logging.config=logback.xml
+cheapflights.url=https://obscure-caverns-79008.herokuapp.com/cheap
+businessflights.url=https://obscure-caverns-79008.herokuapp.com/business
 ```
 
-## Logging file
+#### Logging file
 
 The default logging file is a logback configuration file which uses the following configuration;
 
@@ -67,6 +69,23 @@ The default logging file is a logback configuration file which uses the followin
 </configuration>
 ```
 
-**Beware that there's no file appender in the default logging configuration.**
+*Beware that there's no file appender in the default logging configuration.*
+
+### Usage
+
+#### Cache
+It internally caches two given external sources on startup,
+if you want to re-cache you can just send a `GET` request to `http://localhost:8080/flightsearch/flight/cache`
+
+
+
+### Code Guidelines
+This project follows the guidelines [from here](https://sercan.atlassian.net/wiki/spaces/JAVA/pages/687603713/a.+Code+Quality) 
+
+Uses;
+
+- [Lombok](https://sercan.atlassian.net/wiki/spaces/JAVA/pages/687570950/2.+Lombok+Plugin)
+- [Checkstyle (Google style)](https://sercan.atlassian.net/wiki/spaces/JAVA/pages/688357379/3.+Checkstyle)
+- [Google code formatter](https://sercan.atlassian.net/wiki/spaces/JAVA/pages/687374338/1.+Conventions+Indention+Code+Style+-+Google+Style) 
 
 
