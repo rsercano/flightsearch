@@ -2,6 +2,8 @@ package com.tokigames.service.impl;
 
 import com.tokigames.beans.BusinessFlight;
 import com.tokigames.beans.CheapFlight;
+import com.tokigames.beans.SearchRequest;
+import com.tokigames.beans.SearchResult;
 import com.tokigames.config.ApplicationConfig;
 import com.tokigames.model.Flight;
 import com.tokigames.service.FlightSearchHandler;
@@ -46,6 +48,12 @@ class FlightSearchHandlerImpl implements FlightSearchHandler {
     insertFlights(cheapFlightsResponse, businessFlights);
 
     log.info("successfully cached both services");
+  }
+
+  @Override
+  public SearchResult search(SearchRequest searchRequest) {
+    //TODO
+    return null;
   }
 
   private void insertFlights(List<CheapFlight> cheapFlightsResponse, List<BusinessFlight> businessFlights) {
