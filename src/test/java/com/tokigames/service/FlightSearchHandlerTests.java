@@ -1,6 +1,7 @@
 package com.tokigames.service;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 import com.tokigames.SpringTestConfiguration;
 import com.tokigames.beans.BusinessFlight;
@@ -29,13 +30,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class FlightSearchHandlerTests {
 
   @Autowired
+  FlightSearchHandler cut;
+
+  @Autowired
   MongoTemplate mongoTemplate;
 
   @Autowired
   HttpRequestUtil httpRequestUtil;
-
-  @Autowired
-  FlightSearchHandler cut;
 
   @After
   public void destroy() {
@@ -54,10 +55,9 @@ public class FlightSearchHandlerTests {
     BusinessFlight businessFlight = new BusinessFlight("3", "AYT -> GZT", ZonedDateTime.parse("2019-04-06T10:20:33Z").toLocalDateTime(),
         ZonedDateTime.parse("2019-04-06T10:20:33Z").toLocalDateTime().plus(1, ChronoUnit.HOURS));
 
-    Mockito.when(httpRequestUtil.proceedGetRequest(SpringTestConfiguration.CHEAP_FLIGHTS_URL, new ParameterizedTypeReference<List<CheapFlight>>() {
+    when(httpRequestUtil.proceedGetRequest(SpringTestConfiguration.CHEAP_FLIGHTS_URL, new ParameterizedTypeReference<List<CheapFlight>>() {
     })).thenReturn(List.of(cheapFlight, cheapFlight2));
-
-    Mockito.when(httpRequestUtil.proceedGetRequest(SpringTestConfiguration.BUSINESS_FLIGHTS_URL, new ParameterizedTypeReference<List<BusinessFlight>>() {
+    when(httpRequestUtil.proceedGetRequest(SpringTestConfiguration.BUSINESS_FLIGHTS_URL, new ParameterizedTypeReference<List<BusinessFlight>>() {
     })).thenReturn(List.of(businessFlight));
 
     // execute
@@ -76,44 +76,15 @@ public class FlightSearchHandlerTests {
   }
 
   /**
-   * Cheap flights external services are not working
-   */
-  @Test(expected = CommunicationException.class)
-  public void cacheFlightsTest_2() {
-    // arrange
-    Mockito.when(httpRequestUtil.proceedGetRequest(SpringTestConfiguration.CHEAP_FLIGHTS_URL, new ParameterizedTypeReference<List<CheapFlight>>() {
-    })).thenThrow(CommunicationException.class);
-
-    // execute
-    cut.cacheFlights();
-  }
-
-  /**
-   * Business flights external services are not working
-   */
-  @Test(expected = CommunicationException.class)
-  public void cacheFlightsTest_3() {
-    // arrange
-    Mockito.when(httpRequestUtil.proceedGetRequest(SpringTestConfiguration.CHEAP_FLIGHTS_URL, new ParameterizedTypeReference<List<CheapFlight>>() {
-    })).thenReturn(new ArrayList<>());
-
-    Mockito.when(httpRequestUtil.proceedGetRequest(SpringTestConfiguration.BUSINESS_FLIGHTS_URL, new ParameterizedTypeReference<List<CheapFlight>>() {
-    })).thenThrow(CommunicationException.class);
-
-    // execute
-    cut.cacheFlights();
-  }
-
-  /**
    * External services returns empty array
    */
-  @Test(expected = CommunicationException.class)
-  public void cacheFlightsTest_4() {
+  @Test
+  public void cacheFlightsTest_2() {
     // arrange
-    Mockito.when(httpRequestUtil.proceedGetRequest(SpringTestConfiguration.CHEAP_FLIGHTS_URL, new ParameterizedTypeReference<List<CheapFlight>>() {
+    when(httpRequestUtil.proceedGetRequest(SpringTestConfiguration.CHEAP_FLIGHTS_URL, new ParameterizedTypeReference<List<CheapFlight>>() {
     })).thenReturn(new ArrayList<>());
 
-    Mockito.when(httpRequestUtil.proceedGetRequest(SpringTestConfiguration.BUSINESS_FLIGHTS_URL, new ParameterizedTypeReference<List<BusinessFlight>>() {
+    when(httpRequestUtil.proceedGetRequest(SpringTestConfiguration.BUSINESS_FLIGHTS_URL, new ParameterizedTypeReference<List<BusinessFlight>>() {
     })).thenReturn(new ArrayList<>());
 
     // execute
@@ -122,4 +93,18 @@ public class FlightSearchHandlerTests {
     // assert
     assertThat(mongoTemplate.count(new Query(), Flight.class)).isEqualTo(0);
   }
+
+  /**
+   * External services are not working
+   */
+  @Test(expected = CommunicationException.class)
+  public void cacheFlightsTest_3() {
+    // arrange
+    when(httpRequestUtil.proceedGetRequest(SpringTestConfiguration.CHEAP_FLIGHTS_URL, new ParameterizedTypeReference<List<CheapFlight>>() {
+    })).thenThrow(CommunicationException.class);
+
+    // execute
+    cut.cacheFlights();
+  }
+
 }

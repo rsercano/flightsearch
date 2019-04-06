@@ -11,7 +11,6 @@ import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
 import java.io.IOException;
-import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.DisposableBean;
@@ -24,7 +23,6 @@ import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootConfiguration
@@ -34,7 +32,7 @@ import org.springframework.web.client.RestTemplate;
 public class SpringTestConfiguration implements DisposableBean {
 
   public static final String CHEAP_FLIGHTS_URL = "cheap_flights_url";
-  public static final String BUSINESS_FLIGHTS_URL = "cheap_flights_url";
+  public static final String BUSINESS_FLIGHTS_URL = "business_flights_url";
 
   private static final MongodStarter mongodStarter = MongodStarter.getDefaultInstance();
   private MongodExecutable mongodExecutable;
