@@ -5,9 +5,8 @@ import com.tokigames.beans.CheapFlight;
 import com.tokigames.config.ApplicationConfig;
 import com.tokigames.model.Flight;
 import com.tokigames.service.FlightSearchHandler;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import com.tokigames.service.HttpRequestUtil;
+import com.tokigames.util.ModelConverterUtil;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,7 @@ class FlightSearchHandlerImpl implements FlightSearchHandler {
 
   @Override
   public void cacheFlights() {
-    log.info("trying to cache flights");
+    log.info("trying to cache flighs from: {} and {}", applicationConfig.getCheapFlightsUrl(), applicationConfig.getBusinessFlightsUrl());
 
     // clear cache
     mongoTemplate.remove(new Query(), Flight.class);
@@ -50,47 +49,19 @@ class FlightSearchHandlerImpl implements FlightSearchHandler {
   }
 
   private void insertFlights(List<CheapFlight> cheapFlightsResponse, List<BusinessFlight> businessFlights) {
+    List<Flight> flights = new ArrayList<>();
 
-    List<Flight> flights = new ArrayList<>(getFlightsFromCheapFlights(cheapFlightsResponse));
-    flights.addAll(getFlightsFromBusinessFlights(businessFlights));
+    businessFlights.forEach(flight -> {
+      flights.add(ModelConverterUtil.convertBusinessFlightToFlight(flight));
+    });
+    cheapFlightsResponse.forEach(flight -> {
+      flights.add(ModelConverterUtil.convertCheapFlightToFlight(flight));
+    });
 
     if (flights.size() > 0) {
       mongoTemplate.insert(flights, Flight.class);
       log.info("successfully inserted : {} records", flights.size());
     }
-  }
-
-  private List<Flight> getFlightsFromBusinessFlights(List<BusinessFlight> businessFlights) {
-    List<Flight> result = new ArrayList<>();
-
-    businessFlights.forEach(f -> {
-      String arrival = f.getFlight().substring(0, f.getFlight().indexOf(" "));
-      String departure = f.getFlight().substring(f.getFlight().lastIndexOf(" ") + 1);
-
-      Flight flight = Flight.builder().flightId(f.getUuid()).arrival(arrival).departure(departure).arrivalTime(f.getArrival())
-          .departureTime(f.getDeparture()).build();
-
-      result.add(flight);
-    });
-
-    return result;
-  }
-
-  private List<Flight> getFlightsFromCheapFlights(List<CheapFlight> cheapFlightsResponse) {
-    List<Flight> result = new ArrayList<>();
-
-    cheapFlightsResponse.forEach(f -> {
-      Flight flight = Flight.builder().flightId(f.getId()).arrival(f.getArrival()).departure(f.getDeparture()).arrivalTime(getLocalDateTimeFromMiliseconds(f.getArrivalTime()))
-          .departureTime(getLocalDateTimeFromMiliseconds(f.getDepartureTime())).build();
-
-      result.add(flight);
-    });
-
-    return result;
-  }
-
-  private LocalDateTime getLocalDateTimeFromMiliseconds(long value) {
-    return LocalDateTime.ofInstant(Instant.ofEpochMilli(value), ZoneId.systemDefault());
   }
 
 }

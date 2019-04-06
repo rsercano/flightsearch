@@ -15,9 +15,11 @@ import org.springframework.stereotype.Component;
 @ToString
 public class ApplicationConfig {
 
-  @Value("${cheapflights.url}")
   private String cheapFlightsUrl;
-
-  @Value("${businessflights.url}")
   private String businessFlightsUrl;
+
+  public ApplicationConfig(@Value("${cheapflights.url}") String cheapFlightsUrl, @Value("${businessflights.url}") String businessFlightsUrl) {
+    this.cheapFlightsUrl = cheapFlightsUrl;
+    this.businessFlightsUrl = businessFlightsUrl;
+  }
 }

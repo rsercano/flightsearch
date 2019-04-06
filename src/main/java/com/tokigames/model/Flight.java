@@ -1,5 +1,6 @@
 package com.tokigames.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -14,9 +15,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(of = {"flightId"})
+@EqualsAndHashCode
 @Document
 @Builder
+@JsonDeserialize(builder = Flight.FlightBuilder.class)
 public class Flight {
 
   private String flightId;

@@ -1,6 +1,7 @@
 package com.tokigames.service.impl;
 
 import com.tokigames.exception.CommunicationException;
+import com.tokigames.service.HttpRequestUtil;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,25 +12,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * This class is just for internal usage of {@link com.tokigames.service.FlightSearchHandler}.
- *
- * <p>
- * Handles HTTP requests.
- * </p>
- */
 @Slf4j
 @Component
-final class HttpRequestUtil {
+final class HttpRequestUtilImpl implements HttpRequestUtil {
 
   private final RestTemplate restTemplate;
 
   @Autowired
-  HttpRequestUtil(RestTemplate restTemplate) {
+  HttpRequestUtilImpl(RestTemplate restTemplate) {
     this.restTemplate = restTemplate;
   }
 
-  <T> List<T> proceedGetRequest(String url, ParameterizedTypeReference<List<T>> type) {
+  public <T> List<T> proceedGetRequest(String url, ParameterizedTypeReference<List<T>> type) {
     try {
       ResponseEntity<List<T>> serviceResponse = restTemplate.exchange(url, HttpMethod.GET, null, type);
 
