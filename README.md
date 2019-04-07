@@ -77,6 +77,8 @@ The default logging file is a logback configuration file which uses the followin
 It internally caches two given external sources on startup,
 if you want to re-cache you can just send a `GET` request to `http://localhost:8080/flightsearch/flight/cache`
 
+#### Search
+All related documentation can be found in; `http://localhost:8080/flightsearch/swagger-ui.html`
 
 
 ### Code Guidelines

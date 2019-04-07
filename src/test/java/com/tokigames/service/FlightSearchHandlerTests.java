@@ -9,6 +9,7 @@ import com.tokigames.beans.CheapFlight;
 import com.tokigames.beans.SearchRequest;
 import com.tokigames.beans.SearchResult;
 import com.tokigames.exception.CommunicationException;
+import com.tokigames.exception.NotValidRequestException;
 import com.tokigames.model.Flight;
 import com.tokigames.util.ModelConverterUtil;
 import java.time.Instant;
@@ -111,16 +112,78 @@ public class FlightSearchHandlerTests {
   }
 
   /**
+   * null request param.
+   */
+  @Test(expected = NotValidRequestException.class)
+  public void searchTest_1() {
+    // arrange
+
+    // execute
+    cut.search(null);
+  }
+
+  /**
+   * invalid page size info
+   */
+  @Test(expected = NotValidRequestException.class)
+  public void searchTest_2() {
+    // arrange
+    SearchRequest searchRequest = new SearchRequest();
+    searchRequest.setPageSize(0);
+    searchRequest.setPage(0);
+
+    // execute
+    cut.search(searchRequest);
+  }
+
+  /**
+   * invalid page info
+   */
+  @Test(expected = NotValidRequestException.class)
+  public void searchTest_3() {
+    // arrange
+    SearchRequest searchRequest = new SearchRequest();
+    searchRequest.setPageSize(10);
+    searchRequest.setPage(-1);
+
+    // execute
+    cut.search(searchRequest);
+  }
+
+  /**
+   * invalid sort param
+   */
+  @Test(expected = NotValidRequestException.class)
+  public void searchTest_4() {
+    // arrange
+    SearchRequest searchRequest = new SearchRequest();
+    searchRequest.setPageSize(10);
+    searchRequest.setPage(0);
+    searchRequest.setSortBy("not_exist");
+    searchRequest.setSortDirection(Direction.ASC);
+
+    // execute
+    cut.search(searchRequest);
+  }
+
+  /**
    * Simple search without any query & sort, should come with insertion order.
    */
   @Test
-  public void searchTest_1() {
+  public void searchTest_5() {
     // arrange
     List<Flight> flights = createFlights();
 
+    SearchRequest searchRequest = new SearchRequest();
+    searchRequest.setPageSize(1);
+    searchRequest.setPage(0);
+
     // execute
-    SearchResult firstPage = cut.search(SearchRequest.builder().page(0).pageSize(1).build());
-    SearchResult secondPage = cut.search(SearchRequest.builder().page(1).pageSize(1).build());
+    SearchResult firstPage = cut.search(searchRequest);
+
+    searchRequest.setPage(1);
+
+    SearchResult secondPage = cut.search(searchRequest);
 
     // assert
     assertThat(firstPage).isNotNull();
@@ -138,17 +201,19 @@ public class FlightSearchHandlerTests {
    * Search with one field query & with single sort.
    */
   @Test
-  public void searchTest_2() {
+  public void searchTest_6() {
     // arrange
     List<Flight> flights = createFlights();
 
+    SearchRequest searchRequest = new SearchRequest();
+    searchRequest.setPageSize(1);
+    searchRequest.setPage(0);
+    searchRequest.setSortBy("arrivalTime");
+    searchRequest.setSortDirection(Direction.ASC);
+    searchRequest.setQuery(Map.of("arrival", "AYT"));
+
     // execute
-    SearchResult result = cut.search(SearchRequest.builder()
-        .page(0)
-        .pageSize(1)
-        .sortBy(Map.of("arrivalTime", Direction.ASC))
-        .query(Flight.builder().arrival("AYT").build())
-        .build());
+    SearchResult result = cut.search(searchRequest);
 
     // assert
     assertThat(result).isNotNull();
@@ -161,17 +226,19 @@ public class FlightSearchHandlerTests {
    * Search with multiple queries & single sort.
    */
   @Test
-  public void searchTest_3() {
+  public void searchTest_7() {
     // arrange
     List<Flight> flights = createFlights();
 
+    SearchRequest searchRequest = new SearchRequest();
+    searchRequest.setPageSize(5);
+    searchRequest.setPage(0);
+    searchRequest.setSortBy("arrivalTime");
+    searchRequest.setSortDirection(Direction.ASC);
+    searchRequest.setQuery(Map.of("arrival", "AYT", "departure", "GZP"));
+
     // execute
-    SearchResult result = cut.search(SearchRequest.builder()
-        .page(0)
-        .pageSize(5)
-        .sortBy(Map.of("arrivalTime", Direction.ASC))
-        .query(Flight.builder().arrival("AYT").departure("GZP").build())
-        .build());
+    SearchResult result = cut.search(searchRequest);
 
     // assert
     assertThat(result).isNotNull();
@@ -183,28 +250,28 @@ public class FlightSearchHandlerTests {
   }
 
   /**
-   * Search with multiple queries & multiple sort.
+   * Search with multiple queries including date.
    */
   @Test
-  public void searchTest_4() {
+  public void searchTest_8() {
     // arrange
     List<Flight> flights = createFlights();
 
+    SearchRequest searchRequest = new SearchRequest();
+    searchRequest.setPageSize(5);
+    searchRequest.setPage(0);
+    searchRequest.setSortBy("arrivalTime");
+    searchRequest.setSortDirection(Direction.ASC);
+    searchRequest.setQuery(Map.of("arrival", "AYT", "departure", "GZP", "arrivalTime", flights.get(5).getArrivalTime()));
+
     // execute
-    SearchResult result = cut.search(SearchRequest.builder()
-        .page(0)
-        .pageSize(5)
-        .sortBy(Map.of("arrivalTime", Direction.ASC, "flightId", Direction.DESC))
-        .query(Flight.builder().arrival("AYT").departure("GZP").build())
-        .build());
+    SearchResult result = cut.search(searchRequest);
 
     // assert
     assertThat(result).isNotNull();
-    assertThat(result.getResult().size()).isEqualTo(3);
-    assertThat(result.getResult().get(0)).isEqualTo(flights.get(4));
-    assertThat(result.getResult().get(1)).isEqualTo(flights.get(5));
-    assertThat(result.getResult().get(2)).isEqualTo(flights.get(3));
-    assertThat(result.getTotal()).isEqualTo(3);
+    assertThat(result.getResult().size()).isEqualTo(1);
+    assertThat(result.getResult().get(0)).isEqualTo(flights.get(5));
+    assertThat(result.getTotal()).isEqualTo(1);
   }
 
   private List<Flight> createFlights() {
@@ -233,6 +300,9 @@ public class FlightSearchHandlerTests {
     result.add(flight1);
     result.add(flight2);
     result.add(flight3);
+    result.add(flight4);
+    result.add(flight5);
+    result.add(flight6);
 
     return result;
   }

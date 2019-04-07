@@ -1,29 +1,25 @@
 package com.tokigames.beans;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.tokigames.model.Flight;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Map;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import org.springframework.data.domain.Sort.Direction;
 
 /**
  * Request of search method, uses AND for all given parameters for {@link SearchRequest#query}.
  */
-@Getter
-@Setter
-@ToString
-@Builder
-@JsonDeserialize(builder = SearchRequest.SearchRequestBuilder.class)
+@Data
 public class SearchRequest {
 
-  private Flight query;
+  private Map<String, Object> query;
 
-  private int pageSize;
-  private int page;
+  @ApiModelProperty(required = true)
+  private int pageSize = 10;
 
-  private Map<String, Direction> sortBy;
+  @ApiModelProperty(required = true)
+  private int page = 0;
+
+  private String sortBy;
+  private Direction sortDirection;
 
 }

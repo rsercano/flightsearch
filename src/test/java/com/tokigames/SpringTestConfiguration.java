@@ -63,7 +63,7 @@ public class SpringTestConfiguration implements DisposableBean {
   @Bean
   public MongoDbFactory mongoDbFactory() throws IOException {
     log.info("trying to start local mock mongodb...");
-    mongodExecutable = mongodStarter.prepare(new MongodConfigBuilder().version(Version.V3_6_5).net(new Net("localhost", 12345, Network.localhostIsIPv6())).build());
+    mongodExecutable = mongodStarter.prepare(new MongodConfigBuilder().version(Version.V4_0_2).net(new Net("localhost", 12345, Network.localhostIsIPv6())).build());
     mongodProcess = mongodExecutable.start();
 
     return new SimpleMongoDbFactory(mongoClient(), "content");

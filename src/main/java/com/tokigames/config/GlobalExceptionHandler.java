@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Slf4j
 public final class GlobalExceptionHandler {
 
-  private static final String NOT_VALID_REQUEST = "NOT_VALID_REQUEST";
-  private static final String COMMUNICATION_ERROR = "COMMUNICATION_ERROR";
-  private static final String INTERNAL_ERROR = "INTERNAL_ERROR";
+  public static final String NOT_VALID_REQUEST = "NOT_VALID_REQUEST";
+  public static final String COMMUNICATION_ERROR = "COMMUNICATION_ERROR";
+  public static final String INTERNAL_ERROR = "INTERNAL_ERROR";
+
   private static final String INTERNAL_ERROR_MESSAGE = "Please check logs, there's an internal server error !";
 
   @ExceptionHandler(NotValidRequestException.class)

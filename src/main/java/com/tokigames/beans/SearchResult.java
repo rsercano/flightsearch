@@ -15,7 +15,7 @@ import lombok.ToString;
 @ToString
 public class SearchResult {
 
-  private int total;
+  private long total;
   private List<Flight> result = new ArrayList<>();
 
 }
